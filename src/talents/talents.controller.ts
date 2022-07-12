@@ -51,11 +51,6 @@ export class TalentsController {
 
   @Post('createtalent')
   async createTalent(@Body() newTalent: Talent): Promise<Talent> {
-    try {
-      return await this.talentsService.createTalent(newTalent);
-    } catch (err) {
-      console.log('ERRORRR', err);
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.talentsService.createTalent(newTalent);
   }
 }

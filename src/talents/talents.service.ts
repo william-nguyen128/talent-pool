@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { ReturnModelType } from '@typegoose/typegoose';
+import { InjectModel } from 'nestjs-typegoose';
 import { Talent } from './models/talent.model';
 
 @Injectable()
 export class TalentsService {
   constructor(
-    @InjectModel(Talent.name)
+    @InjectModel(Talent)
     private readonly talentModel: ReturnModelType<typeof Talent>,
   ) {}
 

@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Talent, TalentSchema } from './models/talent.model';
+import { TypegooseModule } from 'nestjs-typegoose';
+import { Talent } from './models/talent.model';
 import { TalentsController } from './talents.controller';
 import { TalentsService } from './talents.service';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: Talent.name, schema: TalentSchema }]),
-  ],
+  imports: [TypegooseModule.forFeature([Talent])],
   controllers: [TalentsController],
   providers: [TalentsService],
 })
