@@ -6,15 +6,13 @@ import {
   Param,
   Put,
   Post,
-  HttpException,
-  HttpStatus,
 } from '@nestjs/common';
-import { Talent } from './models/talent.model';
-import { TalentsService } from './talents.service';
+import { Talent } from './schemas/talent.schema';
+import { TalentService } from './talent.service';
 
-@Controller('talents')
-export class TalentsController {
-  constructor(private readonly talentsService: TalentsService) {}
+@Controller('talent')
+export class TalentController {
+  constructor(private talentsService: TalentService) {}
 
   @Get()
   async getAllTalent(): Promise<Talent[]> {
@@ -36,12 +34,7 @@ export class TalentsController {
     @Body() updatedTalent: Talent,
     @Param('id') talentId: string,
   ): Promise<Talent> {
-    try {
-      return await this.talentsService.updateTalent(talentId, updatedTalent);
-    } catch (err) {
-      console.log('ERRORRR', err);
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.talentsService.updateTalent(talentId, updatedTalent);
   }
 
   @Delete(':id')
@@ -49,13 +42,8 @@ export class TalentsController {
     return await this.talentsService.deleteTalent(talentId);
   }
 
-  @Post('createtalent')
+  @Post('create')
   async createTalent(@Body() newTalent: Talent): Promise<Talent> {
-    try {
-      return await this.talentsService.createTalent(newTalent);
-    } catch (err) {
-      console.log('ERRORRR', err);
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.talentsService.createTalent(newTalent);
   }
 }

@@ -1,17 +1,6 @@
-import { prop } from '@typegoose/typegoose';
-
-class FieldValidation {
-  static email = (email) => {
-    const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    return re.test(email);
-  };
-
-  static phone = (phone) => {
-    const re =
-      /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/;
-    return re.test(phone);
-  };
-}
+import { buildSchema, prop } from '@typegoose/typegoose';
+import { Type } from 'class-transformer';
+import { IsEmail, IsPhoneNumber, IsUrl, ValidateNested } from 'class-validator';
 
 class Location {
   @prop()
@@ -37,42 +26,45 @@ class Profile {
   @prop()
   username: string;
 
+  @IsUrl()
   @prop()
   url: string;
 }
 
 class Basics {
-  @prop({ required: [true, 'Name required'], trim: true })
-  name!: string;
+  @prop({ default: 'Your name', trim: true })
+  name: string;
 
-  @prop({ required: [true, 'Label required'], trim: true })
-  label!: string;
+  @prop({ default: 'Your title', trim: true })
+  label: string;
 
+  @IsUrl()
   @prop()
-  image?: string;
+  image: string;
 
-  @prop({
-    required: [true, 'Email required'],
-    validate: [FieldValidation.email, 'Invalid email address'],
-  })
-  email!: string;
+  @IsEmail()
+  @prop()
+  email: string;
 
-  @prop({
-    required: [true, 'Phone number required'],
-    validate: [FieldValidation.phone, 'Invalid phone number'],
-  })
-  phone!: string;
+  @IsPhoneNumber()
+  @prop()
+  phone: string;
 
+  @IsUrl()
   @prop()
   url: string;
 
   @prop()
   summary: string;
 
-  @prop({ type: Location })
+  // @ValidateNested()
+  // @Type(() => Location)
+  @prop()
   location: Location;
 
-  @prop({ type: () => [Profile] })
+  @ValidateNested({ each: true })
+  @Type(() => Profile)
+  @prop()
   profiles: Profile[];
 }
 
@@ -83,6 +75,7 @@ class Work {
   @prop()
   position: string;
 
+  @IsUrl()
   @prop()
   url: string;
 
@@ -106,6 +99,7 @@ class Volunteer {
   @prop()
   position: string;
 
+  @IsUrl()
   @prop()
   url: string;
 
@@ -126,6 +120,7 @@ class Education {
   @prop()
   insititution: string;
 
+  @IsUrl()
   @prop()
   url: string;
 
@@ -172,6 +167,7 @@ class Certificate {
   @prop()
   issuer: string;
 
+  @IsUrl()
   @prop()
   url: string;
 }
@@ -186,6 +182,7 @@ class Publication {
   @prop()
   releaseDate: string;
 
+  @IsUrl()
   @prop()
   url: string;
 
@@ -247,6 +244,7 @@ class Project {
   @prop()
   endDate: string;
 
+  @IsUrl()
   @prop()
   url: string;
 
@@ -261,39 +259,65 @@ class Project {
 }
 
 export class Talent {
-  @prop({ required: true, type: Basics })
+  @ValidateNested()
+  @Type(() => Basics)
+  @prop()
   basics: Basics;
 
-  @prop({ type: () => [Work] })
+  @ValidateNested({ each: true })
+  @Type(() => Work)
+  @prop()
   work: Work[];
 
+  @ValidateNested({ each: true })
+  @Type(() => Volunteer)
   @prop({ type: () => [Volunteer] })
   volunteer: Volunteer[];
 
+  @ValidateNested({ each: true })
+  @Type(() => Education)
   @prop({ type: () => [Education] })
   education: Education[];
 
+  @ValidateNested({ each: true })
+  @Type(() => Award)
   @prop({ type: () => [Award] })
   awards: Award[];
 
+  @ValidateNested({ each: true })
+  @Type(() => Certificate)
   @prop({ type: () => [Certificate] })
   certificates: Certificate[];
 
+  @ValidateNested({ each: true })
+  @Type(() => Publication)
   @prop({ type: () => [Publication] })
   publications: Publication[];
 
+  @ValidateNested({ each: true })
+  @Type(() => Skill)
   @prop({ type: () => [Skill] })
   skills: Skill[];
 
+  @ValidateNested({ each: true })
+  @Type(() => Language)
   @prop({ type: () => [Language] })
   languages: Language[];
 
+  @ValidateNested({ each: true })
+  @Type(() => Interest)
   @prop({ type: () => [Interest] })
   interests: Interest[];
 
+  @ValidateNested({ each: true })
+  @Type(() => Reference)
   @prop({ type: () => [Reference] })
   references: Reference[];
 
+  @ValidateNested({ each: true })
+  @Type(() => Project)
   @prop({ type: () => [Project] })
   projects: Project[];
 }
+
+export const TalentSchema = buildSchema(Talent);
